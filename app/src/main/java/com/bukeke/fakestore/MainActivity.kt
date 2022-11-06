@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.bukeke.fakestore.databinding.ActivityMainBinding
@@ -24,13 +25,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var productsService: ProductsService
-
-    @Inject
-    lateinit var productMapper: ProductMapper
-
     private lateinit var binding : ActivityMainBinding
+
+    private val viewModel:MainActivityViewModel by lazy {
+        ViewModelProvider(this)[MainActivityViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,16 +40,14 @@ class MainActivity : AppCompatActivity() {
         binding.epoxyRecyclerView.setController(controller)
         controller.setData(emptyList())
 
-        lifecycleScope.launchWhenStarted {
-            val response : Response<List<NetworkProduct>> = productsService.getAllProducts()
-            val domainProducts: List<Product> = response.body()!!.map {
-                productMapper.buildFrom(networkProduct = it)
-            }
-            controller.setData(domainProducts)
-            if (domainProducts.isEmpty()) {
+        viewModel.productsLiveData.observe(this) {products ->
+            controller.setData(products)
+            if (products.isEmpty()) {
                 Snackbar.make(binding.root, "Failed to fetch", Snackbar.LENGTH_LONG).show()
             }
         }
+        viewModel.refreshProducts()
+
 
     }
 
