@@ -5,19 +5,26 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bukeke.fakestore.model.domain.Product
+import com.bukeke.fakestore.redux.ApplicationState
+import com.bukeke.fakestore.redux.Store
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val productsRepository:ProductsRepository):ViewModel() {
+    val store: Store<ApplicationState>,
+    private val productsRepository:ProductsRepository
+    ):ViewModel() {
 
-        private val _productsLiveData = MutableLiveData<List<Product>>()
-    val productsLiveData: LiveData<List<Product>> = _productsLiveData
+
 
     fun refreshProducts() = viewModelScope.launch{
-        val products = productsRepository.fetchAllProducts()
-        _productsLiveData.value = products
+        val products:List<Product> = productsRepository.fetchAllProducts()
+        store.update {applicationState ->
+            return@update applicationState.copy(
+                products = products
+            )
+        }
     }
 }

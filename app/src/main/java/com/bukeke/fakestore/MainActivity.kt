@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.bukeke.fakestore.databinding.ActivityMainBinding
@@ -16,6 +17,8 @@ import com.bukeke.fakestore.model.network.NetworkProduct
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -40,17 +43,14 @@ class MainActivity : AppCompatActivity() {
         binding.epoxyRecyclerView.setController(controller)
         controller.setData(emptyList())
 
-        viewModel.productsLiveData.observe(this) {products ->
+        viewModel.store.stateFlow.map {
+            it.products
+        }.distinctUntilChanged().asLiveData().observe(this) { products ->
             controller.setData(products)
-            if (products.isEmpty()) {
-                Snackbar.make(binding.root, "Failed to fetch", Snackbar.LENGTH_LONG).show()
-            }
+
         }
         viewModel.refreshProducts()
-
-
     }
-
 
     /*
     interface ProductsService {
