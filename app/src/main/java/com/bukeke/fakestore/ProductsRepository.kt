@@ -1,0 +1,18 @@
+package com.bukeke.fakestore
+
+import com.bukeke.fakestore.hilt.service.ProductsService
+import com.bukeke.fakestore.model.domain.Product
+import com.bukeke.fakestore.model.mapper.ProductMapper
+import javax.inject.Inject
+
+class ProductsRepository @Inject constructor(
+    private val productsService: ProductsService,
+    private val productMapper: ProductMapper
+) {
+    suspend fun fetchAllProducts():List<Product>{
+        //todo better error handling
+        return productsService.getAllProducts().body()?.let { networkProducts ->
+            networkProducts.map { productMapper.buildFrom(it) }
+        } ?: emptyList()
+    }
+}
