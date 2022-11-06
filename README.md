@@ -7,5 +7,10 @@
 #### *Epoxy library from Airbnb in recyclerviews.
 #### *Facebook shimmer library.
 
+The app is still under development
+
+## Screenshot
+
+<img src="https://github.com/Brandonbukeke/Fake-Store-App/blob/master/app/src/main/res/drawable/fakestorescreenshot.png" height=480 width=240 >
 
 
