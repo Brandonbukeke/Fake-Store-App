@@ -8,11 +8,12 @@ import com.bukeke.fakestore.model.domain.Product
 import com.bukeke.fakestore.redux.ApplicationState
 import com.bukeke.fakestore.redux.Store
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
+class ProductsListViewModel @Inject constructor(
     val store: Store<ApplicationState>,
     private val productsRepository:ProductsRepository
     ):ViewModel() {
@@ -26,5 +27,6 @@ class MainActivityViewModel @Inject constructor(
                 products = products
             )
         }
+
     }
 }
